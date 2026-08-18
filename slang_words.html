@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Slang Words Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-image: url('https://m.media-amazon.com/images/I/81wvhvd4OWL._AC_UF894,1000_QL80_.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 flex justify-center items-center min-h-screen relative">
+
+  <!-- Background Overlay -->
+  <div class="absolute inset-0 bg-black bg-opacity-60 z-0"></div>
+
+  <!-- Main Glass Box -->
+  <div class="relative z-10 bg-white bg-opacity-10 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-md border border-white border-opacity-20">
+    <h1 class="text-2xl font-bold text-blue-200 text-center mb-4">Slang Words Finder</h1>
+    <p class="text-blue-100 text-center mb-6">Find slang words in, Bangla, English and Hindi!</p>
+
+    <!-- Custom Dropdown -->
+    <label class="block text-white text-sm font-bold mb-2">Choose a Language:</label>
+    <div class="relative mb-4" id="dropdownWrapper">
+      <button id="dropdownButton" class="w-full text-left bg-white text-gray-800 py-2 px-3 rounded shadow focus:outline-none flex justify-between items-center">
+        <span id="selectedLanguage">Bengali</span>
+        <svg class="w-4 h-4 ml-2 transform transition-transform" id="dropdownIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <ul id="dropdownMenu" class="absolute z-10 left-0 w-full mt-1 bg-white text-gray-800 rounded shadow-lg hidden">
+        <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" data-value="bengali">Bengali</li>
+        <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" data-value="english">English</li>
+        <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" data-value="hindi">Hindi</li>
+      </ul>
+    </div>
+
+    <!-- Results Display -->
+    <div class="mb-6">
+      <label for="results" class="block text-white text-sm font-bold mb-2">Results:</label>
+      <div id="results" class="bg-gray-100 border rounded p-4 text-gray-800 h-16 overflow-auto"></div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex flex-col space-y-2">
+      <button id="randomButton" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded focus:outline-none w-full">
+        Random Slang
+      </button>
+      <button id="copyButton" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded focus:outline-none w-full">
+        Copy
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-xs font-semibold rounded-lg px-4 py-1 shadow-md text-center" style="font-family: 'Inter', sans-serif;">
+    <div>Creator: Alien</div>
+    <div>Contributors: Hati, dMC</div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    let selectedLanguageValue = "bengali"; // default
+
+    // Dropdown toggle
+    document.getElementById("dropdownButton").addEventListener("click", () => {
+      document.getElementById("dropdownMenu").classList.toggle("hidden");
+      document.getElementById("dropdownIcon").classList.toggle("rotate-180");
+    });
+
+    // Dropdown option click
+    document.querySelectorAll("#dropdownMenu li").forEach(item => {
+      item.addEventListener("click", () => {
+        selectedLanguageValue = item.getAttribute("data-value");
+        document.getElementById("selectedLanguage").textContent = item.textContent;
+        document.getElementById("dropdownMenu").classList.add("hidden");
+        document.getElementById("dropdownIcon").classList.remove("rotate-180");
+      });
+    });
+
+    const resultsDisplay = document.getElementById("results");
+    const randomButton = document.getElementById("randomButton");
+    const copyButton = document.getElementById("copyButton");
+
+    const slangTerms = {
+      english: ["mother fucker", "fuck you", "fuck", "fucker", "stupid", "mother chod", "sucker", "pervert", "salty", "pornstar", "oily", "sexy", 
+                "sexa", "play boy", "cum", "pussy", "bastard", "fucking bitch", "wasted", "buzzkill", "Jesus fuck", " fucking ass", "sis-fucker", 
+                "in shit", "dickhead", "small dikc", "cock", "bullshit", "bitch", "bloody", "crap", "damn", " damnit", "holy shit", "piss", 
+                "pigfucker", "sister fucker", "badass", "dickhead", "tiny dick", "play boy", "call boy", "call girl", "dipshit", "shit"],
+      bengali: ["মাদারচোদ", "খান*ক পলা", "বোকা*দা", "ভালো ছেলে", "চোষা ছেলে", "মাগ*", "খান*ক মাগ*", "ধ*ন", "ধ*ন চোষ*", "হাত মারা", "অক্ষম", 
+                "খান*কর বেটী", "বুচক*", "বুচক* মাগ*", "হাত মারা", "খাওয়া", "মাল", "খাওয়া মাল", "ভোদাই", "গুষ্টি চ*দি", "নটি", "নটির পোলা", "নটকির ছেলে", 
+                "শুয়োর", "শুয়োরের বাচ্চা", "জাউরা", "যাযবর", "যারজ", "বাল", "গাজা", "গাজাখোর", "ডেন্ডি", "কাউয়া চ*দা", "ডাইল খোর", "বাড়া", "হারামি", 
+                "হারামজাদা", "শয়তান", "জানোয়ার", "বাড়াচো*দা", "চো*দনা", "ধন", "নলা", "ছাপড়ি", "গাধা", "কুত্তা", "কুত্তার বাচ্ছা", "চে*টের ব*ল", 
+                "সুদানি*র পুলা", "চ্যাটের বাল", "গুদের ছাল", "ডাইনোসর চ*দা", "মহিষ চ*দা", "ইতর", "চাড্ডি", "শাহবাগী", "শালা", "খাড়াধ*ন", "কচু", 
+                "ভাদাইম্মা", "বিচি কাটা বলদ", "লোডু", "টেংরি ভাইংগা হাতে ধরায়া দিমু", "মাসিকের রক্ত", "চো*দনা", "চু*দির ভাই", "চু*ত*মারানি", "চু*দির পোলা", 
+                "তর মায়রে চু*দি", "তর মায়রে বাপ", "শালার পো শালা", "হুমুন্দির পুত", "মা*ঙ্গির পুত", "নাটকির পো", "ল্যাউড়ার পুত", "হাউ*য়ার পো", "হাউ*য়ার নাতি", 
+                "চুদা*নির পো", "ভু*দার বেটা", "লটির পো", "লটির বেটা", "ভেড়াচ্চো*দা", "মাউড়া চো*দা", "হো*গার ভিতরে ভইড়া দিমু…", "ঠ্যাঁঙ কাইট্টা পুট*কি দা ভইরা দিমু!", 
+                "হালা ল্যাওড়া চো*দা", "বান*চো*ত", "কুত্তাচো*দা", "ভৈরব মা*গী", "পুটকি মারা খা", "গাড় মারা খা", "ভইরা দিমু", "মাঙ্গের পোলা", "উপ্তা কইরা চু*দমু", 
+                "মা*ঙ্গের নাতি", "চু*দনা মা*গী", "ভাতার চু*দা", "ভেবলা চোদা", "বোকাচোদা", "মফিজ", "হালারপো", "শুয়োরের ছেলে", "গুদমারা খা", "শাহবাগী"],
+      hindi: ["chutia", "mutthi", "chodne waala", "apad", "lawde", "lawnda", "na mard", "ladki baaz", "mutthi wala", "lawda", "machoda", "janwar", 
+              "harami", "chapri", "bahenc*od", "bakchod", "bc", "bewda", "bevkuf", "bhosadc*od", "chooche", "chod", "chutiya", "gadha", "gaand", 
+              "kuttey", "ling", "ullu", "behenchod", "maa ki chut", "bhosdike", "teri gand faad dunga", "teri gand maar dunga", "bhen ka lawde", 
+              "bakchod", "chutiya", "madarchod", "fattu", "land", "gand", "lallu"]
+    };
+
+    // Random button logic
+    randomButton.addEventListener("click", () => {
+      const languageSlang = slangTerms[selectedLanguageValue];
+      if (languageSlang) {
+        const randomKey = languageSlang[Math.floor(Math.random() * languageSlang.length)];
+        resultsDisplay.textContent = randomKey;
+      } else {
+        resultsDisplay.textContent = "Language not supported!";
+      }
+    });
+
+    // Copy button logic
+    copyButton.addEventListener("click", () => {
+      const textToCopy = resultsDisplay.textContent;
+      if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          copyButton.textContent = "Copied!";
+          setTimeout(() => {
+            copyButton.textContent = "Copy";
+          }, 1500);
+        }).catch(() => {
+          copyButton.textContent = "Failed to copy";
+        });
+      }
+    });
+  </script>
+</body>
+</html>

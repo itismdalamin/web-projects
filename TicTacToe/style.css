@@ -1,0 +1,212 @@
+/* ================= GLOBAL RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ================= LIGHT THEME (Default) ================= */
+body {
+  background: linear-gradient(135deg, #f9f9f9, #e6f0fa);
+  color: #2c3e50;
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Game Board */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game {
+  height: 60vmin;
+  width: 60vmin;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 1rem;
+}
+
+.box {
+  height: 18vmin;
+  width: 18vmin;
+  border-radius: 12px;
+  border: none;
+  background: #ffffff;
+  font-size: 8vmin;
+  font-weight: bold;
+  color: #2980b9; /* Default blue for moves */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.box:hover:not(:disabled) {
+  background: #f0f8ff;
+  transform: scale(1.05);
+}
+
+.box:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+/* Buttons */
+#reset-btn,
+#new-btn {
+  margin-top: 1.5rem;
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  background: #27ae60; /* Green buttons */
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#reset-btn:hover,
+#new-btn:hover {
+  background: #219150;
+  transform: translateY(-2px);
+}
+
+/* Theme Toggle Button */
+.top-bar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+#theme-btn {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #333;
+  color: #fff;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#theme-btn:hover {
+  background: #555;
+  transform: translateY(-2px);
+}
+
+/* Footer */
+footer {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  font-size: 0.85rem;
+  color: #555;
+  font-style: italic;
+}
+
+/* Winner/Draw Message */
+#msg {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.msg-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  background: rgba(255,255,255,0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2rem;
+  z-index: 100;
+}
+
+.msg-container button {
+  background: #2980b9;
+}
+
+.msg-container button:hover {
+  background: #1f6391;
+}
+
+.hide {
+  display: none;
+}
+
+/* ================= DARK THEME ================= */
+body.dark-theme {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: #f1f1f1;
+}
+
+body.dark-theme h1 {
+  color: #fdfdfd;
+}
+
+body.dark-theme .box {
+  background: #1b2a38;
+  color: #00d9ff; /* Neon cyan for moves */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+body.dark-theme .box:hover:not(:disabled) {
+  background: #22384d;
+}
+
+body.dark-theme #reset-btn,
+body.dark-theme #new-btn {
+  background: #ff6b6b; /* Red buttons */
+}
+
+body.dark-theme #reset-btn:hover,
+body.dark-theme #new-btn:hover {
+  background: #e63946;
+}
+
+body.dark-theme #theme-btn {
+  background: #f1f1f1;
+  color: #222;
+}
+
+body.dark-theme footer {
+  color: #bbb;
+}
+
+body.dark-theme #msg {
+  color: #f1f1f1;
+}
+
+body.dark-theme .msg-container {
+  background: rgba(0,0,0,0.9);
+}
+
+body.dark-theme .msg-container button {
+  background: #06d6a0;
+}
+
+body.dark-theme .msg-container button:hover {
+  background: #04a777;
+}

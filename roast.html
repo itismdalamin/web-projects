@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roast Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://img.freepik.com/free-vector/pop-art-comic-background-with-halftone-color-funny-cloud_60438-1750.jpg'); /* Random image from Unsplash */
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold text-blue-600 text-center mb-4">Roaster</h1>
+        <p class="text-gray-700 text-center mb-6">Generate unlimited roasts in various languages!</p>
+
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Enter your name:</label>
+            <input type="text" id="name" placeholder="Enter name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="slang" class="block text-gray-700 text-sm font-bold mb-2">Choose a Language:</label>
+            <select id="slang" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option value="english">English</option>
+                <option value="bengali">Bengali</option>
+                <option value="hindi">Hindi</option>
+            </select>
+        </div>
+
+        <div class="mb-6">
+            <label for="roast" class="block text-gray-700 text-sm font-bold mb-2">Your Roast:</label>
+            <div id="roast" class="bg-gray-200 border rounded p-4 text-gray-800"></div>
+        </div>
+
+        <button id="roastButton" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">Roast</button>
+    </div>
+    
+    <footer class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-xs font-semibold rounded-lg px-4 py-1 shadow-md text-center" style="font-family: 'Inter', sans-serif;">
+        <div>Created with ❤️ by Alien</div>
+    </footer>
+
+    <script>
+        const nameInput = document.getElementById("name");
+        const slangSelect = document.getElementById("slang");
+        const roastDisplay = document.getElementById("roast");
+        const roastButton = document.getElementById("roastButton");
+
+        // Define the blacklist of forbidden words
+        // You can add more words to this array to prevent them from being used in the name input.
+        const forbiddenWords = ["al-amin", "alamin", "al amin", "al -amin", "al- amin", "alien", "al", "amin", "-", "-amin", "muhammad", "আল-আমিন", "আল-আমীন", "আলামিন", "আলামীন", "আল", "আমিন", "আমীন"]; 
+
+        const roasts = {
+            english: [
+                "Hey, {name}, you're so dumb, you fell for the same joke twice!",
+                "I'd call you a tool, {name}, but that would imply you have a purpose.",
+                "{name}, you're not the sharpest tool in the shed, are you?",
+                "Is your brain made of sponges, {name}? It absorbs everything but holds nothing.",
+                "I've had coffee mugs with more personality than you, {name}.",
+                "You bring everyone so much joy, {name}, when you leave the room.",
+                "If laughter is the best medicine, your face, {name}, must be curing the world.",
+                "Mirrors can't talk. Lucky for you, {name}, they can't laugh either.",
+                "Some people are born successful, some are born beautiful, {name}, and then there's you.",
+                "I'm not saying you're dumb, {name}, but you're really testing my faith in humanity.",
+                "I'm surprised your shadow hasn't left you, {name}. It has more brains.",
+                "If you were any more clueless, you'd be a mystery even to yourself, {name}.",
+                "You're proof that evolution can go in reverse, {name}.",
+                "I'd explain it to you, {name}, but I'd rather not be here all day.",
+                "Were you born on a highway, {name}? Because that's where most accidents happen.",
+                "I'm not sure what's tighter, your jeans or your brain, {name}.",
+                "You're so far behind, you think you're in first place, {name}.",
+                "I'd roast you harder, but I'm afraid I'd burn myself on your stupidity, {name}.",
+                "Do you ever wonder what it's like to have a functioning brain, {name}?",
+                "You're the reason they invented the 'Are you sure?' button, {name}."
+            ],
+            bengali: [
+                "ওই {name}, তুই এত বোকা যে একই ঠাট্টার জন্য দুইবার হাসিস!",
+                "আমি তোকে একটা হাতিয়ার বলতাম, {name}, কিন্তু তাতে বোঝাতো যে তোর একটা উদ্দেশ্য আছে।",
+                "তুই কি খুব একটা বুদ্ধিমান লোক না, {name}?",
+                "তোর মস্তিষ্ক কি স্পঞ্জ দিয়ে তৈরি, {name}? এটা সবকিছু শোষণ করে কিন্তু কিছু ধরে রাখে না।",
+                "তোর চেয়ে আমার কফির মগেও বেশি ব্যক্তিত্ব আছে, {name}.",
+                "তুই চলে গেলে সবাই খুব খুশি হয়, {name}.",
+                "হাসি যদি সেরা ওষুধ হয়, তাহলে তোর মুখ, {name}, নিশ্চয়ই বিশ্বকে সারিয়ে তুলছে।",
+                "আয়না কথা বলতে পারে না। ভাগ্যিস, {name}, তারা হাসতেও পারে না।",
+                "কিছু মানুষ সফল হয়ে জন্মায়, কিছু সুন্দর হয়ে জন্মায়, {name}, আর তারপর তুই আছিস।",
+                "আমি বলছি না যে তুই বোকা, {name}, কিন্তু তুই সত্যিই মানবতার উপর আমার বিশ্বাস পরীক্ষা করছিস।",
+                "আমি অবাক হচ্ছি তোর ছায়া তোকে ছেড়ে যায়নি, {name}। ওরও বেশি বুদ্ধি আছে।",
+                "তুই যদি আরেকটু বেকুব হোস, তাহলে তুই নিজের কাছেও একটা রহস্য হবি, {name}.",
+                "তুই প্রমাণ যে বিবর্তন বিপরীত দিকেও যেতে পারে, {name}.",
+                "তোকে এটা বোঝাতে গেলে, {name}, আমার সারাদিন লেগে যাবে, তাই আমি চাইনা।",
+                "তুই কি রাস্তায় জন্মেছিলি, {name}? কারণ সেখানেই বেশিরভাগ দুর্ঘটনা ঘটে।",
+                "আমি নিশ্চিত না যে কোনটা বেশি টাইট, তোর জিন্স নাকি তোর মস্তিষ্ক, {name}.",
+                "তুই এত পিছিয়ে আছিস যে ভাবছিস তুই প্রথম স্থানে আছিস, {name}.",
+                "আমি তোকে আরও কঠিনভাবে ভেজে দিতাম, কিন্তু আমি ভয় পাচ্ছি যে আমি তোর বোকামিতে নিজেই পুড়ে যাব, {name}.",
+                "তুই কি কখনও চিন্তা করেছিস যে একটা কার্যকরী মস্তিষ্ক থাকা কেমন, {name}?",
+                "তুই হলি সেই কারণ যার জন্য 'আপনি কি নিশ্চিত?' বোতাম তৈরি করা হয়েছে, {name}।"
+            ],
+            hindi: [
+                "Hey {name}, tum itne bewakoof ho ki ek hi mazak par do baar hase!",
+                "Main tumhe ek auzaar kehta, {name}, lekin usse pata chalta ki tumhara ek maqsad hai.",
+                "{name}, kya tum sabse tez hathiyar nahi ho?",
+                "Kya tumhara dimag sponge se bana hai, {name}? Yah sab kuch sokh leta hai lekin kuch nahi rakhta.",
+                "Mere paas tumse zyada personality wale coffee mug hain, {name}.",
+                "Tum sabko bahut khushi dete ho, {name}, jab tum kamre se chale jate ho.",
+                "Agar hansi sabse achi dawa hai, to tumhara chehra, {name}, duniya ka ilaaj kar raha hoga.",
+                "Sheeshe bol nahi sakte. Khushkismati se, {name}, woh hans bhi nahi sakte.",
+                "Kuch log safal paida hote hain, kuch sundar paida hote hain, {name}, aur phir tum ho.",
+                "Main yeh nahi keh raha ki tum bewakoof ho, {name}, lekin tum sach mein insaniyat mein mere vishwas ki pariksha le rahe ho.",
+                "Mujhe hairani hai ki tumhari parchhai ne tumhe nahi chhoda, {name}। Uske paas zyada dimag hai.",
+                "Agar tum thode aur anjaan hote, to tum apne aap mein bhi ek rahasya hote, {name}।",
+                "Tum is baat ka saboot ho ki vikas ulta bhi ho sakta hai, {name}।",
+                "Main tumhe yeh samjhata, {name}, lekin main yahan pura din nahi bitana chahta.",
+                "Kya tum kisi highway par paida hue the, {name}? Kyunki wahin zyadatar durghatnayen hoti hain.",
+                "Mujhe yakeen nahi hai ki kya zyada tang hai, tumhari jeans ya tumhara dimag, {name}।",
+                "Tum itne piche ho, tum soch rahe ho ki tum pahle sthan par ho, {name}।",
+                "Main tumhe aur zor se roast karta, lekin mujhe dar hai ki main tumhari bewakoofi par khud ko jala lunga, {name}।",
+                "Kya tum kabhi sochte ho ki ek kaam karne wala dimag hona kaisa hota hai, {name}?",
+                "Tum isliye banaye gaye the 'Kya aap sunishchit hain?' button, {name}।"
+            ]
+        };
+
+        roastButton.addEventListener("click", function() {
+            const name = nameInput.value.trim(); // Trim whitespace from the input
+            const slang = slangSelect.value;
+
+            // Convert the input name to lowercase for case-insensitive checking
+            const lowerCaseName = name.toLowerCase();
+
+            // Check if the name is empty
+            if (name === "") {
+                roastDisplay.textContent = "Please enter your friend's name!";
+            } 
+            // Check if the name contains any forbidden words
+            else if (forbiddenWords.some(word => lowerCaseName.includes(word))) {
+                roastDisplay.textContent = "That name cannot be roasted. Please enter a different name.";
+            }
+            // Proceed with roasting if the name is valid
+            else if (roasts[slang]) {
+                const randomRoast = roasts[slang][Math.floor(Math.random() * roasts[slang].length)];
+                const personalizedRoast = randomRoast.replace("{name}", name);
+                roastDisplay.textContent = personalizedRoast;
+            } else {
+                roastDisplay.textContent = "Language not supported!";
+            }
+        });
+    </script>
+</body>
+</html>

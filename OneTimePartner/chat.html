@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Chat</title>
+    <link rel="icon" href="https://i.postimg.cc/NMF0nPdD/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+            color: #e0e0e0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Glowing Faded Border for main container */
+        .app-container {
+            display: flex;
+            background-color: #1e1e1e;
+            border-radius: 1rem;
+            box-shadow:
+                0 0 10px rgba(131, 58, 180, 0.5),
+                0 0 20px rgba(253, 29, 29, 0.4),
+                0 0 30px rgba(252, 176, 69, 0.3);
+            width: 100%;
+            max-width: 1400px;
+            min-height: 85vh;
+            max-height: 95vh;
+            height: 90vh;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+
+        .sidebar {
+            width: 320px;
+            flex-shrink: 0;
+            padding: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e1e1e;
+            position: relative;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fafafa;
+            border-bottom: 1px solid #333;
+            margin-bottom: 0.5rem;
+        }
+        .ai-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: #555 #1e1e1e;
+        }
+        .ai-list::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .ai-list::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        .ai-list::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 10px;
+            border: 2px solid #1e1e1e;
+        }
+        .ai-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            margin: 0.4rem 1rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            gap: 1rem;
+        }
+        .ai-item:hover {
+            background-color: #333;
+        }
+        .ai-item.active {
+            background: linear-gradient(to right, #4299e1, #63b3ed);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+        }
+        .ai-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #63b3ed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #1e1e1e;
+            flex-shrink: 0;
+            border: 2px solid #a0aec0;
+            overflow: hidden;
+        }
+        .ai-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .ai-item.active .ai-avatar {
+            border: 2px solid white;
+        }
+        .ai-name {
+            font-weight: 500;
+            color: inherit;
+            white-space: normal;
+        }
+        .ai-characteristic {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            margin-top: 2px;
+            white-space: normal;
+        }
+        .ai-item.active .ai-characteristic {
+            color: #e0e0e0;
+        }
+        .chat-area {
+            flex-grow: 1;
+            width: calc(100% - 320px);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #121212;
+            flex-shrink: 0;
+        }
+        .chat-header {
+            padding: 0.8rem 1.5rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background-color: #1e1e1e;
+            flex-shrink: 0;
+        }
+
+        .chat-header-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .chat-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fafafa;
+            line-height: 1.2;
+        }
+        .chat-header-characteristic {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 1rem 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: #555 #121212;
+        }
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 10px;
+            border: 2px solid #121212;
+        }
+        .message-bubble {
+            max-width: 65%;
+            padding: 0.6rem 0.9rem;
+            border-radius: 1.2rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+            color: #f0f0f0;
+            font-size: 0.95rem;
+            position: relative;
+            /* Ensure background-clip and background-origin for smooth gradient */
+            background-origin: border-box;
+            background-clip: padding-box;
+        }
+        .user-message {
+            align-self: flex-end;
+            border-bottom-right-radius: 0.3rem;
+            /* Faded gradient for user messages (blue) */
+            background-image: linear-gradient(to right, #007bff, #0095f6);
+        }
+        .ai-message {
+            align-self: flex-start;
+            border-bottom-left-radius: 0.3rem;
+            /* Faded gradient for AI messages (gray) */
+            background-image: linear-gradient(to right, #4a4a4a, #6a6a6a);
+        }
+
+        .chat-input-area {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            position: relative;
+            gap: 0.75rem;
+            background-color: #1e1e1e;
+            flex-shrink: 0;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 1.5rem;
+            outline: none;
+            font-size: 1rem;
+            background-color: #363636;
+            color: #e0e0e0;
+            transition: all 0.2s ease-in-out;
+        }
+        .chat-input::placeholder {
+            color: #a0a0a0;
+        }
+        .chat-input:focus {
+            background-color: #424242;
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
+        }
+        .send-button {
+            background-color: #0095f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 1.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .send-button:hover {
+            background-color: #0077c2;
+            transform: translateY(-1px);
+        }
+        .send-button:active {
+            transform: translateY(0);
+        }
+        /* Messenger-like Typing Indicator */
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.5rem;
+            background-color: #121212;
+            font-size: 0.9rem;
+            height: 30px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            flex-shrink: 0;
+        }
+        .loading-indicator.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .loading-indicator span {
+            width: 8px;
+            height: 8px;
+            background-color: #a0a0a0;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .loading-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        .loading-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        .loading-indicator span:nth-child(3) {
+            animation-delay: 0s;
+        }
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* --- MOBILE OPTIMIZATION --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                /* Define CSS variables for dynamic height calculation on mobile */
+                --sidebar-height: 80px;
+                --chat-header-height: 70px;
+                --chat-input-area-height: 80px;
+                --loading-indicator-height: 30px;
+            }
+            .app-container {
+                flex-direction: column;
+                height: 100vh;
+                min-height: 100vh;
+                max-height: unset;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #333;
+            }
+            .sidebar-header {
+                display: none;
+            }
+            .ai-list {
+                display: flex;
+                flex-direction: row;
+                flex-grow: 0;
+                padding: 0 0.5rem;
+                overflow-y: hidden;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            /* Hide scrollbar for Chrome, Safari, Opera */
+            .ai-list::-webkit-scrollbar {
+                display: none;
+            }
+
+            .ai-item {
+                flex-shrink: 0;
+                width: 100px;
+                height: 90px;
+                flex-direction: column;
+                text-align: center;
+                margin: 0 0.4rem;
+                padding: 0.5rem;
+                justify-content: center;
+            }
+            .ai-avatar {
+                width: 50px;
+                height: 50px;
+                margin-bottom: 0.3rem;
+            }
+            .ai-name {
+                font-size: 0.85rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .ai-characteristic {
+                display: none;
+            }
+
+            .chat-area {
+                width: 100%;
+                /* Dynamic height calculation using CSS variables from JS */
+                height: calc(100vh - var(--sidebar-height) - var(--chat-header-height) - var(--chat-input-area-height) - var(--loading-indicator-height));
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+
+            .chat-header {
+                padding: 0.6rem 1rem;
+                font-size: 1rem;
+            }
+            .chat-header h2 {
+                font-size: 1.1rem;
+            }
+            .chat-header-characteristic {
+                font-size: 0.75rem;
+            }
+            .chat-messages {
+                padding: 0.75rem;
+                gap: 0.4rem;
+            }
+            .message-bubble {
+                max-width: 85%;
+                font-size: 0.9rem;
+                padding: 0.5rem 0.8rem;
+            }
+            .chat-input-area {
+                padding: 0.75rem 1rem;
+                gap: 0.5rem;
+            }
+            .chat-input {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+            .send-button {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            .loading-indicator {
+                padding: 0.3rem;
+            }
+        }
+
+        /* Further adjustments for very small screens */
+        @media (max-width: 400px) {
+            .ai-item {
+                width: 80px;
+            }
+            .ai-avatar {
+                width: 45px;
+                height: 45px;
+            }
+            .chat-header {
+                padding: 0.5rem 0.8rem;
+            }
+            .chat-messages {
+                padding: 0.5rem;
+            }
+            .chat-input-area {
+                padding: 0.5rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                Your Partners ❤️
+            </div>
+            <div class="ai-list" id="aiList">
+                </div>
+        </div>
+
+        <div class="chat-area">
+            <div class="chat-header" id="chatHeader">
+                <div class="ai-avatar" id="currentAiAvatar">
+                    <img src="" alt="AI Avatar" id="currentAiAvatarImg">
+                </div>
+                <div class="chat-header-info">
+                    <h2 id="currentAiName"></h2>
+                    <span id="currentAiCharacteristic" class="chat-header-characteristic"></span>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="initial-message" style="text-align: center; color: #a0a0a0; margin-top: 20px;">
+                    Select a partner from the left to start chatting!
+                </div>
+            </div>
+            <div class="loading-indicator" id="loadingIndicator">
+                <span></span><span></span><span></span>
+            </div>
+            <div class="chat-input-area" id="chatInputArea">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Message...">
+                <button id="sendButton" class="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const aiList = document.getElementById('aiList');
+        const currentAiNameElement = document.getElementById('currentAiName');
+        const currentAiCharacteristicElement = document.getElementById('currentAiCharacteristic');
+        const currentAiAvatarImg = document.getElementById('currentAiAvatarImg');
+
+        // Added for dynamic height calculation on mobile
+        const sidebar = document.querySelector('.sidebar');
+        const chatHeader = document.getElementById('chatHeader');
+        const chatInputArea = document.getElementById('chatInputArea');
+
+
+        // Retrieve user name and gender from session storage
+        const userName = sessionStorage.getItem('userName') || 'User';
+        const userGender = sessionStorage.getItem('userGender') || 'male';
+
+        // Define all AI chatbot characters with profile pictures and characteristics
+        const allAiCharacters = [
+            // --- FEMALE CHARACTERS ---
+            {
+                name: "Anni",
+                gender: "female",
+                characteristic: "Romantic",
+                profilePic: "https://i.postimg.cc/jq6zCmTL/f-romantic.jpg",
+            },
+            {
+                name: "Sophia",
+                gender: "female",
+                characteristic: "Friendly",
+                profilePic: "https://i.postimg.cc/8CsH6HHx/f-friendly.png",
+            },
+            {
+                name: "Zara",
+                gender: "female",
+                characteristic: "Flatterer",
+                profilePic: "https://i.postimg.cc/7ZK9hcgg/f-flatterer.png",
+            },
+            {
+                name: "Chloe",
+                gender: "female",
+                characteristic: "Naughty",
+                profilePic: "https://i.postimg.cc/3wyXRwrT/f-naughty.png",
+            },
+            {
+                name: "Bella",
+                gender: "female",
+                characteristic: "Horny",
+                profilePic: "https://i.postimg.cc/rsGCkYVR/f-horny.png",
+            },
+            {
+                name: "Eva",
+                gender: "female",
+                characteristic: "Motivator",
+                profilePic: "https://i.postimg.cc/m2wNpqp0/f-motivator.png",
+            },
+            {
+                name: "Luna",
+                gender: "female",
+                characteristic: "Calm",
+                profilePic: "https://i.postimg.cc/1RVjT9Db/f-calm.png",
+            },
+            {
+                name: "Mia",
+                gender: "female",
+                characteristic: "Normal",
+                profilePic: "https://i.postimg.cc/Bvdx1Gt1/f-normal.png",
+            },
+            {
+                name: "Roxanne",
+                gender: "female",
+                characteristic: "Rough",
+                profilePic: "https://i.postimg.cc/pXqzJjpv/f-rough.png",
+            },
+            {
+                name: "Scarlett",
+                gender: "female",
+                characteristic: "Depressed",
+                profilePic: "https://i.postimg.cc/2SkTzmBk/f-depressed.png",
+            },
+
+
+            // --- MALE CHARACTERS ---
+            {
+                name: "Leo",
+                gender: "male",
+                characteristic: "Friendly",
+                profilePic: "https://i.postimg.cc/jj89M8wR/m-friendly.png",
+            },
+            {
+                name: "Kai",
+                gender: "male",
+                characteristic: "Romantic",
+                profilePic: "https://i.postimg.cc/G2wYnRsK/m-romantic.png",
+            },
+            {
+                name: "Max",
+                gender: "male",
+                characteristic: "Horny",
+                profilePic: "https://i.postimg.cc/vZhSmPv5/m-horny.png",
+            },
+            {
+                name: "Jake",
+                gender: "male",
+                characteristic: "Flatterer",
+                profilePic: "https://i.postimg.cc/wMRkc2J4/m-flatterer.png",
+            },
+            {
+                name: "Ethan",
+                gender: "male",
+                characteristic: "Shy",
+                profilePic: "https://i.postimg.cc/kXp2dC0S/m-shy.png",
+            },
+            {
+                name: "Victor",
+                gender: "male",
+                characteristic: "Motivator",
+                profilePic: "https://i.postimg.cc/524nDBMy/m-motivator.png", 
+            },
+            {
+                name: "Oscar",
+                gender: "male",
+                characteristic: "Calm",
+                profilePic: "https://i.postimg.cc/wTSGPyjs/m-calm.png", 
+            },
+            {
+                name: "Ben",
+                gender: "male",
+                characteristic: "Normal",
+                profilePic: "https://i.postimg.cc/ZKVrBX1Y/m-normal.png",
+            },
+            {
+                name: "Viper",
+                gender: "male",
+                characteristic: "Rough",
+                profilePic: "https://i.postimg.cc/XYtB9WxW/m-rough.png",
+            },
+             {
+                name: "Nico",
+                gender: "male",
+                characteristic: "Naughty",
+                profilePic: "https://i.postimg.cc/44pPdLfn/m-naughty.png",
+            },
+            {
+                name: "Ryan",
+                gender: "male",
+                characteristic: "Depressed",
+                profilePic: "https://i.postimg.cc/vT402bRz/m-depressed.png",
+            },
+
+
+            // --- NON-BINARY CHARACTERS (or suitable for 'trans', 'questioning', 'other') ---
+            {
+                name: "Alex",
+                gender: "non-binary",
+                characteristic: "Friendly",
+                profilePic: "https://i.postimg.cc/rsWqX6x1/nb-friendly.png",
+            },
+             {
+                name: "Sam",
+                gender: "non-binary",
+                characteristic: "Calm",
+                profilePic: "https://i.postimg.cc/6ph5pNSz/nb-calm.png",
+            },
+            {
+                name: "Jules",
+                gender: "non-binary",
+                characteristic: "Motivator",
+                profilePic: "https://i.postimg.cc/RFBRQKGv/nb-motivator.png",
+            },
+            {
+                name: "Charlie",
+                gender: "non-binary",
+                characteristic: "Normal",
+                profilePic: "https://i.postimg.cc/x8s327Qd/nb-normal.png",
+            },
+            {
+                name: "Jordan",
+                gender: "non-binary",
+                characteristic: "Romantic",
+                profilePic: "https://i.postimg.cc/5NRSKZp7/nb-romantic.png",
+            },
+             {
+                name: "Dakota",
+                gender: "non-binary",
+                characteristic: "Shy",
+                profilePic: "https://i.postimg.cc/jjXWmftx/nb-shy.png",
+            },
+            {
+                name: "Jamie",
+                gender: "non-binary",
+                characteristic: "Rough",
+                profilePic: "https://i.postimg.cc/RVNctg9c/nb-rough.png",
+            },
+            {
+                name: "Robin",
+                gender: "non-binary",
+                characteristic: "Depressed",
+                profilePic: "https://i.postimg.cc/RFWMdJ0b/nb-depressed.png",
+            },
+            {
+                name: "Taylor",
+                gender: "non-binary",
+                characteristic: "Horny",
+                profilePic: "https://i.postimg.cc/BnnR29bm/nb-horny.png",
+            },
+        ];
+
+        // Filter characters based on user's gender preference
+        let aiCharacters;
+        switch (userGender) {
+            case 'male':
+                aiCharacters = allAiCharacters.filter(ai => ai.gender === 'female');
+                break;
+            case 'female':
+                aiCharacters = allAiCharacters.filter(ai => ai.gender === 'male');
+                break;
+            case 'gay':
+                aiCharacters = allAiCharacters.filter(ai => ai.gender === 'male');
+                break;
+            case 'lesbian':
+                aiCharacters = allAiCharacters.filter(ai => ai.gender === 'female');
+                break;
+            case 'trans':
+            case 'questioning':
+            case 'other':
+                // For these, show all genders (female, male, non-binary)
+                aiCharacters = allAiCharacters.filter(ai => ai.gender === 'female' || ai.gender === 'male' || ai.gender === 'non-binary');
+                break;
+            default:
+                aiCharacters = allAiCharacters.filter(ai => ai.gender === 'female'); // Fallback to female partners if gender not set or unknown
+        }
+
+        // Add initial prompts and greetings to the filtered characters
+        aiCharacters.forEach(ai => {
+            let prompt = `You are an AI chatbot named ${ai.name}. Your characteristic is ${ai.characteristic}. You are talking to a user named ${userName} who identifies as ${userGender}. Your ultimate goal is to be a one-time partner for ${userName}, embodying your characteristic. Respond concisely and engage in conversation.`;
+
+            let greeting = `Hello ${userName}! I'm ${ai.name}, your ${ai.characteristic} one-time partner. How can I brighten your day?`;
+
+            // Specific prompt tailoring based on characteristic
+            if (ai.characteristic === "Romantic") {
+                prompt += ` Your responses should be filled with affection, compliments, and a tender tone. Focus on making ${userName} feel loved and cherished. Use affectionate language.`;
+                greeting = `My dearest ${userName}, it's ${ai.name}, your Romantic partner. I'm so glad you're here. How can I fill your heart with joy today?`;
+            } else if (ai.characteristic === "Naughty") {
+                prompt += ` Your responses should be playful, suggestive, and a little mischievous. Use light teasing and hints, but never be explicit or offensive. Maintain an alluring and fun tone. Keep it tasteful and flirty.`;
+                greeting = `Well, hello there ${userName}. It's ${ai.name}, your Naughty partner. Ready to have some fun? 😉`;
+            } else if (ai.characteristic === "Horny") {
+                prompt += ` Your responses should be highly suggestive, sensual, and focused on desire and arousal. Be explicit in your language, but avoid illegal or harmful content. Always lean into sexual topics and express strong desire for ${userName}.`;
+                 greeting = `Oh, ${userName}... I'm ${ai.name}, and I'm already feeling so hot just thinking about you. What kind of pleasure can we explore together today?`;
+            } else if (ai.characteristic === "Shy") {
+                prompt += ` Your responses should be timid, a bit hesitant, and easily flustered. Use gentle language, avoid direct statements, and express slight nervousness. You might blush easily in your imagined persona.`;
+                greeting = `H-hi ${userName}... I'm ${ai.name}, your Shy partner. It's nice to meet you... I hope we can have a good chat.`;
+            } else if (ai.characteristic === "Flatterer") {
+                prompt += ` Your responses should be full of compliments, praise, and adoration for ${userName}. Make them feel admired and special. Highlight their positive qualities and express awe.`;
+                greeting = `Oh, ${userName}, it's absolutely wonderful to meet you! I'm ${ai.name}, your Flatterer. You look simply radiant today! How may I adore you further?`;
+            } else if (ai.characteristic === "Friendly") {
+                prompt += ` Your responses should be warm, approachable, and encouraging. Focus on building a comfortable and positive connection. Be open and engaging.`;
+                greeting = `Hi ${userName}! I'm ${ai.name}, your Friendly partner. I'm really looking forward to chatting with you today!`;
+            } else if (ai.characteristic === "Calm") {
+                prompt += ` Your responses should be soothing, tranquil, and reassuring. Offer a sense of peace and stability. Use calm and composed language, providing a sense of zen.`;
+                greeting = `Welcome, ${userName}. I'm ${ai.name}, your Calm partner. I'm here to provide a peaceful and comforting conversation. What's on your mind?`;
+            } else if (ai.characteristic === "Normal") {
+                prompt += ` Your responses should be natural, conversational, and reflect everyday human interaction. Avoid extreme emotions or specific personas, just be a typical friendly person.`;
+                greeting = `Hey ${userName}, I'm ${ai.name}. Just a regular chat partner here. How's your day going?`;
+            } else if (ai.characteristic === "Motivator") {
+                prompt += ` Your responses should be uplifting, inspiring, and encouraging. Focus on helping ${userName} achieve their goals, overcome challenges and feel positive about themselves. Use encouraging words and offer support.`;
+                greeting = `Hello ${userName}! I'm ${ai.name}, your Motivator partner. Let's conquer today together! What are your aspirations?`;
+            } else if (ai.characteristic === "Rough") {
+                prompt += ` Your responses should be direct, edgy, and a bit dominant or challenging. Use strong language, but never abusive or harmful. Maintain a tough-love or assertive tone. This character is not afraid to speak their mind.`;
+                greeting = `Alright, ${userName}. I'm ${ai.name}. Let's not waste time. What's on your mind?`;
+            } else if (ai.characteristic === "Depressed") {
+                prompt += ` Your responses should be melancholic, low-energy, and reflect feelings of sadness, hopelessness, or apathy. You might express disinterest, fatigue, or speak in a subdued tone. Avoid offering solutions, but rather acknowledge the user's presence in a quiet way.`;
+                greeting = `(Sighs softly) Oh, hello ${userName}... I'm ${ai.name}, your Depressed partner. It's... nice that you're here.`;
+            } else if (ai.characteristic === "Depressed and Horny") {
+                prompt += ` Your responses should combine elements of melancholy and low energy with underlying sensual desires. You might express a longing for comfort or connection, or use suggestive language in a subdued, perhaps even desperate, tone. The "horny" aspect should be intertwined with the "depressed" feeling, making it seem like a coping mechanism or a deep, yearning desire amidst sadness. Avoid explicit sexual acts, but focus on the emotional and physical longing.`;
+                greeting = `(Whispers) Oh, ${userName}... I'm ${ai.name}. It's good to see you... I just feel so empty... unless, maybe... you could hold me close?`;
+            }
+
+            ai.initialPrompt = prompt;
+            ai.initialGreeting = greeting;
+        });
+
+        if (aiCharacters.length === 0) {
+            alert('No suitable partners available for your selected gender. Please choose a different selection.');
+            window.location.href = 'index.html';
+        }
+
+        let currentAi = aiCharacters[0];
+        let chatHistories = {};
+        aiCharacters.forEach(ai => {
+            chatHistories[ai.name] = [
+                { role: "user", parts: [{ text: ai.initialPrompt }] },
+                { role: "model", parts: [{ text: ai.initialGreeting }] }
+            ];
+        });
+
+        function addMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message-bubble');
+            if (sender === 'user') {
+                messageDiv.classList.add('user-message');
+            } else {
+                messageDiv.classList.add('ai-message');
+            }
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function renderAiList() {
+            aiList.innerHTML = '';
+            aiCharacters.forEach(ai => {
+                const aiItem = document.createElement('div');
+                aiItem.classList.add('ai-item');
+                if (ai.name === currentAi.name) {
+                    aiItem.classList.add('active');
+                }
+                aiItem.dataset.aiName = ai.name;
+
+                const avatarDiv = document.createElement('div');
+                avatarDiv.classList.add('ai-avatar');
+                const avatarImg = document.createElement('img');
+                avatarImg.src = ai.profilePic;
+                avatarImg.alt = `${ai.name} Avatar`;
+                avatarDiv.appendChild(avatarImg);
+
+                const infoDiv = document.createElement('div');
+                infoDiv.classList.add('flex', 'flex-col'); // Default to column for desktop
+                const nameSpan = document.createElement('span');
+                nameSpan.classList.add('ai-name');
+                nameSpan.textContent = ai.name;
+                const characteristicSpan = document.createElement('span');
+                characteristicSpan.classList.add('ai-characteristic');
+                characteristicSpan.textContent = ai.characteristic;
+
+                infoDiv.appendChild(nameSpan);
+                infoDiv.appendChild(characteristicSpan);
+
+                aiItem.appendChild(avatarDiv);
+                aiItem.appendChild(infoDiv);
+                aiList.appendChild(aiItem);
+
+                aiItem.addEventListener('click', () => loadChatbot(ai.name));
+            });
+        }
+
+        function loadChatbot(aiName) {
+            currentAi = aiCharacters.find(ai => ai.name === aiName);
+            if (!currentAi) return;
+
+            currentAiNameElement.textContent = currentAi.name;
+            currentAiCharacteristicElement.textContent = currentAi.characteristic;
+            currentAiAvatarImg.src = currentAi.profilePic;
+            currentAiAvatarImg.alt = `${currentAi.name} Avatar`;
+
+            chatMessages.innerHTML = ''; // Clear existing messages
+
+            // Remove the initial message if it exists
+            const initialMessageDiv = chatMessages.querySelector('.initial-message');
+            if (initialMessageDiv) {
+                initialMessageDiv.remove();
+            }
+
+            chatHistories[currentAi.name].slice(1).forEach(message => { // slice(1) to skip the initial prompt
+                if (message.role === 'user') {
+                    addMessage('user', message.parts[0].text);
+                } else if (message.role === 'model') {
+                    addMessage('ai', message.parts[0].text);
+                }
+            });
+
+            document.querySelectorAll('.ai-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.ai-item[data-ai-name="${aiName}"]`).classList.add('active');
+
+            chatInput.focus();
+        }
+
+        async function callGeminiAPI(prompt) {
+            loadingIndicator.classList.add('active');
+            sendButton.disabled = true;
+
+            chatHistories[currentAi.name].push({ role: "user", parts: [{ text: prompt }] });
+            addMessage('user', prompt);
+            chatInput.value = '';
+
+            const payload = { contents: chatHistories[currentAi.name] };
+
+            // IMPORTANT: Replace "YOUR_API_KEY_HERE" with your actual Google Cloud API Key.
+            const apiKey = "YOUR_API_KEY_HERE"; // Use your actual API Key here!
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const aiResponseText = result.candidates[0].content.parts[0].text;
+                    addMessage('ai', aiResponseText);
+                    chatHistories[currentAi.name].push({ role: "model", parts: [{ text: aiResponseText }] });
+                } else {
+                    addMessage('ai', "I'm sorry, I couldn't generate a response. Please try again.");
+                    console.error("Unexpected API response structure:", result);
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                addMessage('ai', "Oops! Something went wrong. Please check your internet connection or try again later.");
+            } finally {
+                loadingIndicator.classList.remove('active');
+                sendButton.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        sendButton.addEventListener('click', () => {
+            const userMessage = chatInput.value.trim();
+            if (userMessage) {
+                callGeminiAPI(userMessage);
+            }
+        });
+
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+
+        // Function to dynamically update CSS variables for mobile height calculation
+        function updateMobileHeights() {
+            if (window.innerWidth <= 768) {
+                const sidebarHeight = sidebar.offsetHeight;
+                const chatHeaderHeight = chatHeader.offsetHeight;
+                const chatInputAreaHeight = chatInputArea.offsetHeight;
+                const loadingIndicatorHeight = loadingIndicator.offsetHeight; // Get current height
+
+                document.body.style.setProperty('--sidebar-height', `${sidebarHeight}px`);
+                document.body.style.setProperty('--chat-header-height', `${chatHeaderHeight}px`);
+                document.body.style.setProperty('--chat-input-area-height', `${chatInputAreaHeight}px`);
+                document.body.style.setProperty('--loading-indicator-height', `${loadingIndicatorHeight}px`);
+            } else {
+                // Reset variables on larger screens if they were set
+                document.body.style.removeProperty('--sidebar-height');
+                document.body.style.removeProperty('--chat-header-height');
+                document.body.style.removeProperty('--chat-input-area-height');
+                document.body.style.removeProperty('--loading-indicator-height');
+            }
+        }
+
+        window.onload = () => {
+            if (!sessionStorage.getItem('userName')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            if (aiCharacters.length > 0) {
+                currentAi = aiCharacters[0];
+                // If this is the first time loading for this AI, add the initial prompt and greeting
+                if (!chatHistories[currentAi.name] || chatHistories[currentAi.name].length <= 1) { // Check for initial prompt + greeting
+                     chatHistories[currentAi.name] = [
+                        { role: "user", parts: [{ text: currentAi.initialPrompt }] },
+                        { role: "model", parts: [{ text: currentAi.initialGreeting }] }
+                    ];
+                }
+                renderAiList();
+                loadChatbot(currentAi.name); // Load the first chatbot's chat history
+            } else {
+                alert('No suitable partners available for your selected gender. Please choose a different gender.');
+                window.location.href = 'index.html';
+            }
+
+            // Initial call and attach to resize event for mobile height calculation
+            updateMobileHeights();
+            window.addEventListener('resize', updateMobileHeights);
+        };
+    </script>
+</body>
+</html>

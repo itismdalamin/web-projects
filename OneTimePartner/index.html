@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Time Partner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="https://i.postimg.cc/NMF0nPdD/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 50px;
+            padding-bottom: 15px;
+            padding-left: 15px;
+            padding-right: 15px;
+            box-sizing: border-box;
+            color: #e2e8f0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .welcome-container {
+            background-color: #2d3748;
+            border-radius: 1.5rem;
+            box-shadow:
+                0 0 15px rgba(131, 58, 180, 0.7),
+                0 0 30px rgba(253, 29, 29, 0.5),
+                0 0 45px rgba(252, 176, 69, 0.4);
+            border: 1px solid #4a5568;
+            padding: 2rem;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .welcome-input {
+            width: 100%;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #4a5568;
+            border-radius: 1.5rem;
+            outline: none;
+            font-size: 1rem;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            transition: border-color 0.2s ease-in-out;
+        }
+        .welcome-input:focus {
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.25);
+        }
+        .welcome-button {
+            background-color: #48bb78;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 1.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .welcome-button:hover {
+            background-color: #38a169;
+            transform: translateY(-1px);
+        }
+        .welcome-button:active {
+            transform: translateY(0);
+        }
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+        .radio-group label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+            transition: all 0.2s ease-in-out;
+            flex-basis: calc(50% - 0.4rem);
+            box-sizing: border-box;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        .radio-group label:hover {
+            background-color: #4a5568;
+        }
+        .radio-group input[type="radio"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #a0aec0;
+            border-radius: 50%;
+            background-color: #1a202c;
+            position: relative;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+            flex-shrink: 0;
+        }
+        .radio-group input[type="radio"]:checked {
+            background-color: #4299e1;
+            border-color: #4299e1;
+        }
+        .radio-group input[type="radio"]:checked::after {
+            content: '';
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .privacy-policy {
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.85rem;
+            padding: 1rem;
+            margin-top: 20px;
+        }
+        .privacy-policy h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #e2e8f0;
+        }
+        .privacy-policy p:last-of-type {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #c0c0c0;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 40px;
+            }
+            .welcome-container {
+                max-width: 90%;
+                padding: 1.5rem;
+            }
+            .radio-group {
+                gap: 0.6rem;
+            }
+            .radio-group label {
+                flex-basis: calc(50% - 0.3rem);
+                font-size: 0.85rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            p {
+                font-size: 0.9rem;
+            }
+            .privacy-policy {
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding-top: 30px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .welcome-container {
+                padding: 1rem;
+                border-radius: 1rem;
+            }
+            h1 {
+                font-size: 1.75rem;
+            }
+            p {
+                font-size: 0.85rem;
+            }
+            .radio-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .radio-group label {
+                flex-basis: auto;
+                width: 100%;
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+            .welcome-input, .welcome-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.95rem;
+            }
+            .privacy-policy {
+                padding: 0.75rem;
+                font-size: 0.8rem;
+            }
+            .privacy-policy h3 {
+                font-size: 1rem;
+            }
+            .privacy-policy p:last-of-type {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1 class="text-3xl font-bold mb-6 text-white">One Time Partner!</h1>
+        <p class="text-md mb-8 text-gray-300">Enter your name and select your gender to begin your chat.</p>
+
+        <input type="text" id="userName" class="welcome-input" placeholder="Enter your name">
+
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="gender" value="male"> Male
+            </label>
+            <label>
+                <input type="radio" name="gender" value="female"> Female
+            </label>
+            <label>
+                <input type="radio" name="gender" value="gay"> Gay
+            </label>
+            <label>
+                <input type="radio" name="gender" value="lesbian"> Lesbian
+            </label>
+            <label>
+                <input type="radio" name="gender" value="trans"> Trans
+            </label>
+            <label>
+                <input type="radio" name="gender" value="questioning"> Questioning
+            </label>
+            <label>
+                <input type="radio" name="gender" value="other"> +
+            </label>
+        </div>
+
+        <button id="enterChatButton" class="welcome-button">Enter Chat</button>
+    </div>
+
+    <div class="privacy-policy">
+        <h3>Privacy and Policy</h3>
+        <p>This application is designed for one-time interactions. We do not save or store any personal information or chat data. Your privacy is paramount, and your conversations remain strictly between you and the AI for the duration of your session.</p>
+        <p>Created by Alien 👽</p>
+    </div>
+
+    <script>
+        document.getElementById('enterChatButton').addEventListener('click', () => {
+            const userName = document.getElementById('userName').value.trim();
+            const selectedGender = document.querySelector('input[name="gender"]:checked');
+
+            if (userName && selectedGender) {
+                sessionStorage.setItem('userName', userName);
+                sessionStorage.setItem('userGender', selectedGender.value);
+                window.location.href = 'chat.html';
+            } else {
+                alert('Please enter your name and select your gender.');
+            }
+        });
+    </script>
+</body>
+</html>
